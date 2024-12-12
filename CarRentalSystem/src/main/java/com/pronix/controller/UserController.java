@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pronix.dto.UserDTO;
 import com.pronix.entity.User;
 import com.pronix.service.UserServiceImpl;
 
@@ -26,7 +27,7 @@ public class UserController {
 	
 	
 	@GetMapping("/showAll")
-	public List<User> showAllUsers() {
+	public List<UserDTO> showAllUsers() {
 		return userService.showAll();
 	}
 	

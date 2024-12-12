@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pronix.dto.UserDTO;
 import com.pronix.entity.User;
 import com.pronix.repository.UserRepository;
 @Service
@@ -16,8 +17,16 @@ public class UserServiceImpl implements IUserService {
 	private UserRepository repo;
 
 	@Override
-	public List<User> showAll() {
-		return repo.findAll();
+	public List<UserDTO> showAll() {
+		
+		
+		return repo.findAll().parallelStream().map(user->{
+			UserDTO userDto=new UserDTO();
+			userDto.setId(user.getId());
+			userDto.setFirstName(user.getFirstName());
+			userDto.setLastName(user.getLastName());
+			userDto.setEmail(user.getEmail());
+		});
 	}
 
 	@Override
