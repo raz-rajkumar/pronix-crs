@@ -2,6 +2,7 @@ package com.pronix.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,16 +19,16 @@ public class UserServiceImpl implements IUserService {
 
 	@Override
 	public List<UserDTO> showAll() {
-		
-		
-		return repo.findAll().parallelStream().map(user->{
-			UserDTO userDto=new UserDTO();
-			userDto.setId(user.getId());
-			userDto.setFirstName(user.getFirstName());
-			userDto.setLastName(user.getLastName());
-			userDto.setEmail(user.getEmail());
-		});
+	    return repo.findAll().stream().map(user -> {
+	        UserDTO userDto = new UserDTO();
+	        userDto.setId(user.getId());
+	        userDto.setFirstName(user.getFirstName());
+	        userDto.setLastName(user.getLastName());
+	        userDto.setEmail(user.getEmail());
+	        return userDto;  
+	    }).collect(Collectors.toList());  
 	}
+
 
 	@Override
 	public User byId(Long id) {
