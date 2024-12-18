@@ -37,6 +37,7 @@ public class UserServiceImpl implements IUserService {
 
 	@Override
 	public String save(User user) {
+		
 		User user1=repo.save(user);
 		if(user1!=null)
 			return "User added successfully";
