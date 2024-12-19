@@ -2,6 +2,8 @@ package com.pronix.entity;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,10 +25,12 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)  // Foreign key to User
+    @JsonBackReference("user-booking")
     private User user;  // A booking is linked to one user
 
     @ManyToOne
     @JoinColumn(name = "car_id", nullable = false)  // Foreign key to Car
+    @JsonBackReference("car-booking")
     private Car car;  // A booking is linked to one car
 
     private Date pickupDate;

@@ -48,14 +48,14 @@ public class UserController {
 //	@Autowired
 //	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
-	
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@GetMapping("/showAll")
 	public List<UserDTO> showAllUsers() {
 		return userService.showAll();
 	}
 	
-	@GetMapping("/byId/{id}")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	@GetMapping("/byId/{id}")
 	public User userById(@PathVariable Long id)
 	{
 		return userService.byId(id);
@@ -70,6 +70,8 @@ public class UserController {
 		else
 			return generateRespose("User saved successfully : " + users.getId(), HttpStatus.OK, users);
 	}
+	
+	
 	@PostMapping("/adminRegistration")
 	public ResponseEntity<Object> adminRegisterUser(@RequestBody UserDTO userDto) {
 		userDto.setRole("ADMIN");
@@ -91,12 +93,14 @@ public class UserController {
 	}
 	
 	@PutMapping("update/{id}")
-	@PreAuthorize("hasAuthority('ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
 	public String updateUser(@PathVariable Long id, @RequestBody User user)
 	{
 		return userService.update(id, user);
 	}
 	
+	
+	@PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
 	@DeleteMapping("/delete/{id}")
 	public String deleteUser(@PathVariable Long id)
 	{

@@ -8,6 +8,8 @@ import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -39,6 +41,7 @@ public class User implements UserDetails{
 	private String password;
 
 	@OneToMany(mappedBy = "user") // One user can have multiple bookings
+	@JsonManagedReference("user-booking")
 	private List<Booking> bookings; // List of bookings associated with the user
 
 	@ManyToMany(fetch = FetchType.EAGER)

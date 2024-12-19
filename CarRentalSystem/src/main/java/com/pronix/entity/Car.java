@@ -1,5 +1,9 @@
 package com.pronix.entity;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,7 +12,6 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Entity
 @Data
@@ -26,5 +29,6 @@ public class Car {
     private String availabilityStatus;
 
     @OneToMany(mappedBy = "car")  // One car can have multiple bookings
+    @JsonManagedReference("car-booking")
     private List<Booking> bookings;  // List of bookings associated with the car
 }
