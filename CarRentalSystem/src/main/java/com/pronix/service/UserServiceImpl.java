@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.pronix.dto.UserDTO;
@@ -33,6 +34,13 @@ public class UserServiceImpl implements IUserService {
 	@Override
 	public User byId(Long id) {
 		return repo.findById(id).get();
+	}
+	
+	
+	@Override
+	public User findByEmail(String email)
+	{
+		return repo.findByEmail(email);
 	}
 
 	@Override
@@ -69,6 +77,13 @@ public class UserServiceImpl implements IUserService {
 			return "User deleted successfully";
 		}
 		return "User Deletion failed";
+	}
+
+
+	@Override
+	public ResponseEntity<Object> save(UserDTO userDto) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -1,8 +1,12 @@
 package com.pronix.entity;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,7 +25,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class User implements UserDetails{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4943156629533899022L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id; // Primary key for User
@@ -44,4 +52,22 @@ public class User {
 	public void setRole(Role role) {
 		this.roles.add(role);
 	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		Set<Authority> authorities = new HashSet<>();
+		this.roles.forEach(userRole -> {
+			authorities.add(new Authority(userRole.getRole()));
+		});
+		return authorities;
+	}
+
+	@Override
+	public String getUsername() {
+		
+		return this.email;
+	}
+	
+	
+	
 }

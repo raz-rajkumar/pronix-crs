@@ -1,13 +1,17 @@
 package com.pronix.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pronix.config.JwtGeneratorValidator;
+import com.pronix.dto.JwtResponse;
 import com.pronix.dto.UserDTO;
 import com.pronix.entity.User;
+import com.pronix.security.service.IDefaultUserService;
 import com.pronix.service.IUserService;
 
 @RestController
@@ -29,6 +35,9 @@ public class UserController {
 	@Autowired
 	private IUserService userService;
 	
+	@Autowired
+	IDefaultUserService defaultUser;
+	
 	
 	@Autowired
 	private AuthenticationManager authManager;
@@ -36,8 +45,8 @@ public class UserController {
 	@Autowired
 	JwtGeneratorValidator jwtGenVal;
 	
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+//	@Autowired
+//	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	
 	@GetMapping("/showAll")
@@ -46,31 +55,43 @@ public class UserController {
 	}
 	
 	@GetMapping("/byId/{id}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public User userById(@PathVariable Long id)
 	{
 		return userService.byId(id);
 	}
 	
 	
-	@PostMapping("/registration")
-	public String registerUser(@RequestBody User user)
-	{
-		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-		return userService.save(user);
+	@PostMapping("/userRegistration")
+	public ResponseEntity<Object> userRegisterUser(@RequestBody UserDTO userDto) {
+		User users =  defaultUser.save(userDto);
+		if (users.equals(null))
+			return generateRespose("Not able to save user ", HttpStatus.BAD_REQUEST, userDto);
+		else
+			return generateRespose("User saved successfully : " + users.getId(), HttpStatus.OK, users);
+	}
+	@PostMapping("/adminRegistration")
+	public ResponseEntity<Object> adminRegisterUser(@RequestBody UserDTO userDto) {
+		userDto.setRole("ADMIN");
+		User users =  defaultUser.save(userDto);
+		if (users.equals(null))
+			return generateRespose("Not able to save user ", HttpStatus.BAD_REQUEST, userDto);
+		else
+			return generateRespose("User saved successfully : " + users.getId(), HttpStatus.OK, users);
 	}
 	
 	
 	@GetMapping("/genToken")
-	public String generateJwtToken(@RequestBody User user)
+	public JwtResponse generateJwtToken(@RequestBody User user)
 	{
 		Authentication authentication = authManager.authenticate(
 				new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-	
-	return jwtGenVal.generateToken(authentication);
+	return new JwtResponse(userService.findByEmail(user.getEmail()),jwtGenVal.generateToken(authentication));
 	}
 	
 	@PutMapping("update/{id}")
+	@PreAuthorize("hasAuthority('ROLE_USER')")
 	public String updateUser(@PathVariable Long id, @RequestBody User user)
 	{
 		return userService.update(id, user);
@@ -83,16 +104,28 @@ public class UserController {
 	}
 	
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@GetMapping("/welcomeAdmin")
+	public String welcome() {
+		return "WelcomeAdmin";
+	}
+
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@GetMapping("/welcomeUser")
+	public String welcomeUser() {
+		return "WelcomeUSER";
+	}
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	public ResponseEntity<Object> generateRespose(String message, HttpStatus st, Object responseobj) {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("meaasge", message);
+		map.put("Status", st.value());
+		map.put("data", responseobj);
+
+		return new ResponseEntity<Object>(map, st);
+	}
 	
 }

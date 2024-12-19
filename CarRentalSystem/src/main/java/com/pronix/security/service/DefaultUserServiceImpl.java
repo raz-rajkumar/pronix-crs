@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.pronix.dto.UserDTO;
 import com.pronix.entity.Role;
 import com.pronix.entity.User;
 import com.pronix.repository.RoleRepository;
@@ -40,11 +41,11 @@ public class DefaultUserServiceImpl implements IDefaultUserService{
 	
 	
 	@Override
-	public User save(User user) {
+	public User save(UserDTO user) {
 		Role role = new Role();
-		if(user.getRoles().equals("USER"))
+		if(user.getRole()==null||user.getRole().equals("USER"))
 		  role = roleRepo.findByRole("ROLE_USER");
-		else if(user.getRoles().equals("ADMIN"))
+		else if(user.getRole().equals("ADMIN"))
 		 role = roleRepo.findByRole("ROLE_ADMIN");
 		User user1 = new User();
 		user1.setFirstName(user.getFirstName());
