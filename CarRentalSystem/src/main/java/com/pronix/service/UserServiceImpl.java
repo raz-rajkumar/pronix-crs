@@ -1,5 +1,6 @@
 package com.pronix.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.pronix.dto.BookingDTOWithCar;
 import com.pronix.dto.UserDTO;
+import com.pronix.dto.UserViewDTO;
+import com.pronix.entity.Booking;
 import com.pronix.entity.User;
 import com.pronix.repository.UserRepository;
 @Service
@@ -17,7 +21,10 @@ public class UserServiceImpl implements IUserService {
 	
 	@Autowired
 	private UserRepository repo;
-
+	
+	@Autowired 
+	private BookingServiceImpl bookingService;
+	
 	@Override
 	public List<UserDTO> showAll() {
 	    return repo.findAll().stream().map(user -> {
@@ -32,8 +39,33 @@ public class UserServiceImpl implements IUserService {
 
 
 	@Override
-	public User byId(Long id) {
-		return repo.findById(id).get();
+	public UserViewDTO byId(Long id) {
+		
+		UserViewDTO userView=new UserViewDTO();
+		User user=repo.findById(id).get();
+		userView.setId(id);
+		userView.setFirstName(user.getFirstName());
+		userView.setLastName(user.getLastName());
+		userView.setEmail(user.getEmail());
+		userView.setBookingDtoWithCars(null);
+		
+		List<BookingDTOWithCar> withCar=new ArrayList<BookingDTOWithCar>();
+		
+		List<Booking> bookedList=user.getBookings();
+		
+		for(Booking b: bookedList)
+		{
+			BookingDTOWithCar bookingDto=new BookingDTOWithCar();
+			bookingDto.setId(b.getId());
+			bookingDto.setPickupDate(b.getPickupDate());
+			bookingDto.setReturnDate(b.getReturnDate());
+			bookingDto.setTotalPrice(b.getTotalPrice());
+			bookingDto.setStatus(b.getStatus());
+			bookingDto.setCarDTO(bookingService.getCarDto(b.getCar().getId()));
+			withCar.add(bookingDto);
+		}
+		userView.setBookingDtoWithCars(withCar);
+		return userView;
 	}
 	
 	

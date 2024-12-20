@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pronix.config.JwtGeneratorValidator;
 import com.pronix.dto.JwtResponse;
 import com.pronix.dto.UserDTO;
+import com.pronix.dto.UserViewDTO;
 import com.pronix.entity.User;
 import com.pronix.security.service.IDefaultUserService;
 import com.pronix.service.IUserService;
@@ -54,9 +55,9 @@ public class UserController {
 		return userService.showAll();
 	}
 	
-	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")
 	@GetMapping("/byId/{id}")
-	public User userById(@PathVariable Long id)
+	public UserViewDTO userById(@PathVariable Long id)
 	{
 		return userService.byId(id);
 	}

@@ -1,13 +1,16 @@
 package com.pronix.service;
 
 import java.util.List;
-import java.util.Optional;
 
+import com.pronix.dto.BookingDTOWithUserCar;
 import com.pronix.entity.Booking;
 
 public interface IBookingService {
-	public Booking saveBooking(Booking booking);
-	public List<Booking> getAllBookings();
-	public Optional<Booking> getBookingById(Long id);
-	public void deleteBooking(Long id);
+	public BookingDTOWithUserCar saveBooking(Booking booking);
+	public List<BookingDTOWithUserCar> getAllBookings();
+	public BookingDTOWithUserCar getBookingById(Long id);
+	public String deleteBooking(Long id);
+	public Booking updateBooking(Long id, Booking booking);
+//	public List<Booking> findByUserId(Long id);
+//	public List<Booking> findByCarId(Long id);
 }

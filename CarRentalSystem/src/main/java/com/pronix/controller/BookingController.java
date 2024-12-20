@@ -9,10 +9,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pronix.dto.BookingDTOWithUserCar;
 import com.pronix.entity.Booking;
 import com.pronix.service.IBookingService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 @RestController
@@ -26,7 +29,7 @@ public class BookingController {
 	
 	@PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
 	@GetMapping("/showAll")
-	public List<Booking> showAllBookings()
+	public List<BookingDTOWithUserCar> showAllBookings()
 	{
 		return bookingService.getAllBookings();
 	}
@@ -34,13 +37,22 @@ public class BookingController {
 	
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@PostMapping("/bookCar")
-	public Booking carBooking(@RequestBody Booking booking) {
+	public BookingDTOWithUserCar carBooking(@RequestBody Booking booking) {
 		return bookingService.saveBooking(booking);
 	}
-	
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@GetMapping("/byId/{id}")
-	public Booking bookingById(@PathVariable Long id) {
-		return bookingService.getBookingById(id).get();
+	public BookingDTOWithUserCar bookingById(@PathVariable Long id) {
+		return bookingService.getBookingById(id);
+	}
+	
+	@PutMapping("/update/{id}")
+	public Booking updateBooking(@PathVariable Long id, @RequestBody Booking booking) {
+		Booking book=bookingService.updateBooking(id, booking);
+		if(book!=null)
+			return book;
+		
+		return booking;
 	}
 	
 }

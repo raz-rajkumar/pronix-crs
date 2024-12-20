@@ -5,12 +5,13 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 import com.pronix.dto.UserDTO;
+import com.pronix.dto.UserViewDTO;
 import com.pronix.entity.User;
 
 
 public interface IUserService {
 	public List<UserDTO> showAll();
-	public User byId(Long id);
+	public UserViewDTO byId(Long id);
 	public User findByEmail(String email);
 	public ResponseEntity<Object> save(UserDTO userDto);
 	public String update(Long id, User user);
